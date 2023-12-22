@@ -9,8 +9,9 @@ import (
 )
 
 type Config struct {
-	Database string `yaml:"database"`
-	NodeId   int64  `yaml:"node_id"`
+	Database string  `yaml:"database"`
+	NodeId   int64   `yaml:"node_id"`
+	Mode     *string `yaml:"mode"`
 }
 
 func Init() (cfg Config, err error) {

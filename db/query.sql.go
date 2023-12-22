@@ -7,21 +7,63 @@ package db
 
 import (
 	"context"
+	"database/sql"
 )
 
 const createAccount = `-- name: CreateAccount :one
-INSERT INTO accounts(id, email, password) VALUES($1,$2,$3) RETURNING id
+INSERT INTO accounts(id,email,password,flags,email_verification_token) VALUES($1,$2,$3,$4,$5) RETURNING id, email, flags, time_created
 `
 
 type CreateAccountParams struct {
-	ID       string
-	Email    string
-	Password string
+	ID                     string
+	Email                  string
+	Password               string
+	Flags                  int64
+	EmailVerificationToken sql.NullString
 }
 
-func (q *Queries) CreateAccount(ctx context.Context, arg CreateAccountParams) (string, error) {
-	row := q.db.QueryRow(ctx, createAccount, arg.ID, arg.Email, arg.Password)
-	var id string
-	err := row.Scan(&id)
-	return id, err
+type CreateAccountRow struct {
+	ID          string
+	Email       string
+	Flags       int64
+	TimeCreated sql.NullTime
+}
+
+func (q *Queries) CreateAccount(ctx context.Context, arg CreateAccountParams) (CreateAccountRow, error) {
+	row := q.db.QueryRow(ctx, createAccount,
+		arg.ID,
+		arg.Email,
+		arg.Password,
+		arg.Flags,
+		arg.EmailVerificationToken,
+	)
+	var i CreateAccountRow
+	err := row.Scan(
+		&i.ID,
+		&i.Email,
+		&i.Flags,
+		&i.TimeCreated,
+	)
+	return i, err
+}
+
+const createOrganization = `-- name: CreateOrganization :one
+INSERT INTO organizations(id,owner) VALUES($1,$2) RETURNING id, time_created
+`
+
+type CreateOrganizationParams struct {
+	ID    string
+	Owner string
+}
+
+type CreateOrganizationRow struct {
+	ID          string
+	TimeCreated sql.NullTime
+}
+
+func (q *Queries) CreateOrganization(ctx context.Context, arg CreateOrganizationParams) (CreateOrganizationRow, error) {
+	row := q.db.QueryRow(ctx, createOrganization, arg.ID, arg.Owner)
+	var i CreateOrganizationRow
+	err := row.Scan(&i.ID, &i.TimeCreated)
+	return i, err
 }

@@ -4,10 +4,27 @@
 
 package db
 
-import ()
+import (
+	"database/sql"
+)
 
 type Account struct {
-	ID       string
-	Email    string
-	Password string
+	ID                     string
+	Email                  string
+	EmailVerified          bool
+	EmailVerificationToken sql.NullString
+	TimeEmailVerified      sql.NullTime
+	Phone                  sql.NullString
+	PhoneVerified          bool
+	PhoneVerificationCode  sql.NullString
+	TimePhoneVerified      sql.NullTime
+	Password               string
+	Flags                  int64
+	TimeCreated            sql.NullTime
+}
+
+type Organization struct {
+	ID          string
+	Owner       string
+	TimeCreated sql.NullTime
 }
