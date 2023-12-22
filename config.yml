@@ -1,0 +1,2 @@
+database: "postgres://justin@localhost:5432/menhir"
+node_id: 0

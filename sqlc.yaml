@@ -1,0 +1,13 @@
+version: "2"
+sql:
+  - engine: "postgresql"
+    queries: "query.sql"
+    schema: 
+      - "migrations/20231222055207_init.up.sql"
+    database:
+      uri: "postgres://justin@localhost:5432/menhir"
+    gen:
+      go:
+        package: "db"
+        out: "db"
+        sql_package: "pgx/v4"

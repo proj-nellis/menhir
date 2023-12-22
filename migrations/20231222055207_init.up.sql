@@ -1,0 +1,5 @@
+CREATE TABLE IF NOT EXISTS "accounts" (
+    "id" VARCHAR NOT NULL PRIMARY KEY,
+    "email" VARCHAR NOT NULL,
+    "password" VARCHAR(10000) NOT NULL
+);
