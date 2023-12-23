@@ -8,10 +8,17 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
+type MgConfig struct {
+	Pkey   string `yaml:"pkey"`
+	Domain string `yaml:"domain"`
+	From   string `yaml:"from"`
+}
+
 type Config struct {
-	Database string  `yaml:"database"`
-	NodeId   int64   `yaml:"node_id"`
-	Mode     *string `yaml:"mode"`
+	Database string   `yaml:"database"`
+	NodeId   int64    `yaml:"node_id"`
+	Mode     *string  `yaml:"mode"`
+	Mg       MgConfig `yaml:"mg"`
 }
 
 func Init() (cfg Config, err error) {

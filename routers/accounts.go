@@ -46,5 +46,6 @@ func (r_ctx *RouteContext) PostCreateAccount(ctx *gin.Context) {
 		},
 		Flags: 0,
 	})
+
 	ctx.Status(http.StatusCreated)
 }

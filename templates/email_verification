@@ -1,0 +1,7 @@
+Thank you for signing up, {{username}}
+
+Please click <a href="{{link}}">this link</a> to verify your email.
+<i>if that does not work click {{link}}</i>
+
+Thank you, 
+Menhir Team

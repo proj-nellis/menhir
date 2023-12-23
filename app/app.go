@@ -12,6 +12,8 @@ type App struct {
 	Database   *Database
 	Config     menhir_config.Config
 	Snowflakes *snowflake.Node
+	Mailer     *Mailer
+	Handlebars *Handlebars
 }
 
 func Init() App {
@@ -33,9 +35,17 @@ func Init() App {
 	database := &Database{}
 	database.Init(config.Database)
 
+	mailer := &Mailer{}
+	mailer.Init(config.Mg.Domain, config.Mg.Pkey)
+
+	handlebars := &Handlebars{}
+	handlebars.Init("./templates")
+
 	return App{
 		Database:   database,
 		Config:     config,
 		Snowflakes: node,
+		Handlebars: handlebars,
+		Mailer:     mailer,
 	}
 }
