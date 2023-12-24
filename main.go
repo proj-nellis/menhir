@@ -3,7 +3,6 @@ package main
 // helloß
 import (
 	"fmt"
-	"log"
 
 	"github.com/gin-gonic/gin"
 	"projnellis.com/menhir/app"
@@ -26,10 +25,7 @@ func CORSMiddleware(c *gin.Context) {
 
 func main() {
 	app := app.Init()
-	log.Println(app.Handlebars.Render("email_verification", map[string]any{
-		"link":     "not-a-link",
-		"username": "ibx34",
-	}))
+
 	if app.Config.Mode != nil && *app.Config.Mode == "prod" || *app.Config.Mode == "production" {
 		gin.SetMode(gin.ReleaseMode)
 	}

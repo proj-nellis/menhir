@@ -11,7 +11,7 @@ import (
 )
 
 const createAccount = `-- name: CreateAccount :one
-INSERT INTO accounts(id,email,password,flags,email_verification_token) VALUES($1,$2,$3,$4,$5) RETURNING id, email, flags, time_created
+INSERT INTO accounts(id,email,password,flags,email_verification_token) VALUES($1,$2,$3,$4,$5) RETURNING id, email, flags, time_created,email_verification_token
 `
 
 type CreateAccountParams struct {
@@ -23,10 +23,11 @@ type CreateAccountParams struct {
 }
 
 type CreateAccountRow struct {
-	ID          string
-	Email       string
-	Flags       int64
-	TimeCreated sql.NullTime
+	ID                     string
+	Email                  string
+	Flags                  int64
+	TimeCreated            sql.NullTime
+	EmailVerificationToken sql.NullString
 }
 
 func (q *Queries) CreateAccount(ctx context.Context, arg CreateAccountParams) (CreateAccountRow, error) {
@@ -43,6 +44,7 @@ func (q *Queries) CreateAccount(ctx context.Context, arg CreateAccountParams) (C
 		&i.Email,
 		&i.Flags,
 		&i.TimeCreated,
+		&i.EmailVerificationToken,
 	)
 	return i, err
 }

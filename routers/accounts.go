@@ -1,10 +1,14 @@
 package routers
 
 import (
+	"context"
 	"crypto/rand"
 	"database/sql"
 	"encoding/hex"
+	"fmt"
+	"log"
 	"net/http"
+	"time"
 
 	"github.com/alexedwards/argon2id"
 	"github.com/gin-gonic/gin"
@@ -35,7 +39,7 @@ func (r_ctx *RouteContext) PostCreateAccount(ctx *gin.Context) {
 	rand.Read(email_verification_tokenb[:])
 	email_verification_token := hex.EncodeToString(email_verification_tokenb[:])
 
-	r_ctx.App.Database.Queries.CreateAccount(r_ctx.App.Database.Context, db.CreateAccountParams{
+	new_account, err := r_ctx.App.Database.Queries.CreateAccount(r_ctx.App.Database.Context, db.CreateAccountParams{
 		ID:       account_id,
 		Email:    create_account_data.Email,
 		Password: hash,
@@ -47,5 +51,20 @@ func (r_ctx *RouteContext) PostCreateAccount(ctx *gin.Context) {
 		Flags: 0,
 	})
 
+	message := (*r_ctx.App.Mailer).Mg.NewMessage(r_ctx.App.Config.Mg.From, "Account creation: Email verification", "", new_account.Email)
+	message.SetHtml(r_ctx.App.Handlebars.Render("email_verification", map[string]any{
+		"link": fmt.Sprintf("http://localhost:8080/accounts/email/verify?tok=%s", new_account.EmailVerificationToken.String),
+	}))
+
+	email_ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
+	defer cancel()
+	resp, id, err := (*r_ctx.App.Mailer).Mg.Send(email_ctx, message)
+	if err != nil {
+		log.Println(err)
+		ctx.JSON(http.StatusInternalServerError, struct{ Message string }{Message: "Failed to send email..."})
+		/// TODO: Probably delete/invalidate previously created request
+		return
+	}
+	fmt.Printf("SENT EMAIL: [ID: %s Resp: %s]\n", id, resp)
 	ctx.Status(http.StatusCreated)
 }
